@@ -1,0 +1,37 @@
+{{#extends 'base'}}
+
+{{#block "content"}}
+<h1>All Titles</h1>
+<table class="table">
+    <thead>
+        <th>Title</th>
+        <th>Cost</th>
+        <th>Description</th>
+        <th>Date</th>
+        <th>Stock</th>
+        <th>Height</th>
+        <th>Width</th>
+
+    </thead>
+
+    <tbody>
+{{#each titles}}
+<tr>
+
+        <th>{{this.title}}</th>
+        <th>{{this.cost}}</th>
+        <th>{{this.description}}</th>
+        <th>{{this.date}}</th>
+        <th>{{this.stock}}</th>
+        <th>{{this.height}}</th>
+        <th>{{this.width}}</th>
+
+</tr>
+{{/each}}
+    </tbody>
+   
+</table>
+
+{{/block}}
+
+{{/extends}}

@@ -1,0 +1,10 @@
+{
+    "dev": {
+      "driver": "mysql",
+      "user": "foo",
+      "password":"bar",
+      "database":"poster_shop"
+    }
+  }
+  
+  
