@@ -25,41 +25,42 @@ var bootstrapField = function (name, object) {
 };
 
 
-const createProductForm = ()=> {
+const createTitleForm = ()=> {
 
     return forms.create({
         'title':fields.string({
-            required:true,
+            required: true,
             errorAfterField: true
         }),
         'cost':fields.number({
-            required:true,
+            required: true,
             errorAfterField: true,
             validators:[validators.integer()]
         }),
-        'description':fields.string({
-            required:true,
+        'description': fields.string({
+            required: true,
             errorAfterField: true
         }),
         'date':fields.date({
             required:true,
-            errorAfterField: true
+            errorAfterField: true,
+            validators:[validators.date()]
         }),
-        'stock':fields.number({
-            required:false,
+        'stock': fields.number({
+            required: false,
             errorAfterField: false
         }),
-        'height':fields.number({
+        'height': fields.number({
             required:true,
             errorAfterField: true
         }),
-        'width':fields.number({
-            required:true,
+        'width': fields.number({
+            required: true,
             errorAfterField: true
-        }),
+        })
     })
 
 
 }
 
-module.exports = { bootstrapField, createProductForm }
+module.exports = { bootstrapField, createTitleForm }
