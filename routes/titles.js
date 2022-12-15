@@ -3,7 +3,7 @@ const { createTitleForm, bootstrapField } = require('../forms');
 const router = express.Router();
 
 // #1 import in the Product model
-const { Title } = require('../models')
+const { Title, MediaProperty } = require('../models')
 
 router.get('/', async (req, res) => {
     // #2 - fetch all the products (ie, SELECT * from products)
@@ -15,7 +15,12 @@ router.get('/', async (req, res) => {
 
 router.get('/add', async (req, res) => {
 
-    const form = createTitleForm();
+    const allMediaProperties = await MediaProperty.fetchAll().map((property) => {
+        return [property.get("id"), property.get("name")]
+    })
+    
+
+    const form = createTitleForm(allMediaProperties);
     res.render('titles/create', {
         'form': form.toHTML(bootstrapField)
     })
@@ -25,9 +30,18 @@ router.get('/add', async (req, res) => {
 
 
 
-router.post('/add', function (req, res) {
+router.post('/add', async function (req, res) {
 
-    const titleForm = createTitleForm();
+
+    // CONTINUE FROM HERE
+const allMediaProperties = await MediaProperty.fetchAll().map((property) => {
+    return [property.get("id"), property.get("name")]
+})
+console.log("Test print media properties")
+console.log(allMediaProperties)
+
+
+    const titleForm = createTitleForm(allMediaProperties);
     titleForm.handle(req, {
         'success': async function (form) {
             const titleObject = new Title();
