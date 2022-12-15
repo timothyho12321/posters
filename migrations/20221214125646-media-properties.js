@@ -8,7 +8,16 @@ var seed;
   * We receive the dbmigrate dependency from dbmigrate initially.
   * This enables us to not have to rely on NODE_PATH.
   */
-exports.setup = function(db) {
+
+
+exports.setup = function(options, seedLink) {
+  dbm = options.dbmigrate;
+  type = dbm.dataType;
+  seed = seedLink;
+};
+
+
+exports.up = function(db) {
   return db.createTable("media_properties",{
     "id":{
       type:'int',
@@ -20,16 +29,23 @@ exports.setup = function(db) {
       type: 'string',
       length: 100,
       notNull:true
+    },
+    "description":{
+      type:'string',
+      length:300,
+      
+    },
+    "url":{
+      type:'string',
+      length:300,
+      
     }
   })
 };
 
-exports.up = function(db) {
-  return null;
-};
 
 exports.down = function(db) {
-  return null;
+  return db.dropTable("media_properties");
 };
 
 exports._meta = {

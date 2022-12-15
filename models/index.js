@@ -4,5 +4,10 @@ const Title = bookshelf.model('Title', {
     tableName:'titles'
 });
 
-module.exports = { Title };
+
+const MediaProperty = bookshelf.model('MediaProperty', {
+    tableName:'media-properties'
+});
+
+module.exports = { Title, MediaProperty };
 

@@ -134,16 +134,16 @@ router.post('/update/:poster_id', async function(req,res){
             // form has no data
            
             res.render('titles/update',{
-                'form': form.toHTML(bootstrapField),
-                // 'title':title.toJSON()
+                
+                'form': form.toHTML(bootstrapField)
             })
         },
         'error': async function(form) {
             // one or more fields have validation errors
             
             res.render('titles/update', {
-                'form': form.toHTML(bootstrapField),
-                'title':title.toJSON()
+                'form': form.toHTML(bootstrapField)
+                
             })
         }
     })
