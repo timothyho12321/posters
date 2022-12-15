@@ -44,6 +44,7 @@ router.post('/add', async function (req, res) {
     const titleForm = createTitleForm(allMediaProperties);
     titleForm.handle(req, {
         'success': async function (form) {
+            
             const titleObject = new Title();
             titleObject.set('title', form.data.title);
             titleObject.set('cost', form.data.cost);
@@ -91,9 +92,11 @@ router.get("/update/:poster_id", async function (req, res) {
 
     const titleForm = createTitleForm(allMediaProperties)
 
+
     titleForm.fields.title.value = title.get('title');
     titleForm.fields.cost.value = title.get('cost');
     titleForm.fields.description.value = title.get('description');
+    
     titleForm.fields.date.value = title.get('date').toISOString();
     titleForm.fields.stock.value = title.get('stock');
     titleForm.fields.height.value = title.get('height');
