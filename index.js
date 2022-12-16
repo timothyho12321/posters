@@ -4,7 +4,7 @@ const wax = require("wax-on");
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const flash = require('connect-flash');
-
+const csrf = require('csurf');
 
 require("dotenv").config();
 
@@ -55,6 +55,30 @@ app.use(function (req, res, next) {
   next();
 
 })
+
+app.use(csrf());
+
+app.use(function (err, req, res, next) {
+  // if the function for app.use has 4 parameters
+  // it is an error handler. Any error from the previous middleware
+  // will be passed to it
+  if (err && err.code == "EBADCSRFTOKEN") {
+    req.flash("error_messages", "Sorry the form has expired. Please try again");
+    res.redirect('back');  // redirect with the 'back' as argument means to go back to the previous page
+  } else {
+    // if no error, go to the next middleware
+    next();
+  }
+})
+
+app.use(function(req,res,next){
+  // req.csrfToken() will return a valid CSRF token
+  // and we make it available to all hbs files via `res.locals.csrfToken`
+  res.locals.csrfToken = req.csrfToken();
+  next();
+})
+
+
 
 
 const landingRoutes = require('./routes/landing');
