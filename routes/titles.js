@@ -1,5 +1,6 @@
 const express = require("express");
 const { createTitleForm, bootstrapField } = require('../forms');
+const { checkIfAuthenticated } = require("../middlewares");
 const router = express.Router();
 
 // #1 import in the Product model
@@ -14,7 +15,7 @@ router.get('/', async (req, res) => {
     })
 })
 
-router.get('/add', async (req, res) => {
+router.get('/add', checkIfAuthenticated, async (req, res) => {
 
     const allMediaProperties = await MediaProperty.fetchAll().map((property) => {
         return [property.get("id"), property.get("name")]
@@ -33,7 +34,7 @@ router.get('/add', async (req, res) => {
 
 
 
-router.post('/add', async function (req, res) {
+router.post('/add', checkIfAuthenticated, async function (req, res) {
 
 
     // CONTINUE FROM HERE
@@ -72,9 +73,6 @@ router.post('/add', async function (req, res) {
             req.flash("success_messages", `New Poster
 ${titleObject.get('title')} has been created`)
 
-
-
-
             res.redirect('/titles')
         },
         'empty': async function (form) {
@@ -87,7 +85,10 @@ ${titleObject.get('title')} has been created`)
             // executed if the form has any validation errors
 
             res.render('titles/create', {
-                'form': form.toHTML(bootstrapField)
+                'form': form.toHTML(bootstrapField),
+                cloudinaryName: process.env.CLOUDINARY_NAME,
+                cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+                cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
             })
         }
 

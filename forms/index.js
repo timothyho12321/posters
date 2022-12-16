@@ -26,7 +26,7 @@ var bootstrapField = function (name, object) {
 };
 
 
-const createTitleForm = (allMediaProperties = [], allTags=[]) => {
+const createTitleForm = (allMediaProperties = [], allTags = []) => {
 
 
 
@@ -73,10 +73,13 @@ const createTitleForm = (allMediaProperties = [], allTags=[]) => {
             'required': true,
             errorAfterField: true,
             cssClasses: {
-label: ['form-label']
+                label: ['form-label']
             },
             widget: widgets.multipleSelect(),
             choices: allTags
+        }),
+        'image_url':fields.string({
+            widget: widgets.hidden()
         })
 
 
@@ -101,7 +104,7 @@ const createRegistrationForm = () => {
             cssClasses: {
                 label: ['form-label']
             }
-        }),'password': fields.password({
+        }), 'password': fields.password({
             required: true,
             errorAfterField: true,
             cssClasses: {
@@ -119,6 +122,32 @@ const createRegistrationForm = () => {
     })
 }
 
+const createLoginForm = () => {
+    return forms.create({
+        'email': fields.string({
+            required: true,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            }
+        })
+        ,
+        'password': fields.password({
+            required: true,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            }
+        })
+    })
 
 
-module.exports = { bootstrapField, createTitleForm, createRegistrationForm}
+}
+
+
+
+
+
+
+module.exports = { bootstrapField, createTitleForm, createRegistrationForm,
+    createLoginForm  }

@@ -5,6 +5,7 @@
 <h1>Update Title</h1>
 
 <form method="POST">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
     {{{form}}}
     <input type="submit" class="btn btn-primary" />
 </form>

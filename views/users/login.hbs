@@ -1,28 +1,17 @@
-{{#extends 'base'}}
-
+{{#extends "base"}}
 
 {{#block "content"}}
-
-<h1>Create a New Title</h1>
-
+<h1>Login Page</h1>
+<p>Login by entering your account below</p>
 
 <form method="POST">
     <input type="hidden" name="_csrf" value="{{csrfToken}}" />
-
     {{{form}}}
-    <input type="submit" class="btn btn-primary" />
-
+    <input type="submit" class="btn btn-primary" value="Enter login" />
 
 </form>
 
 
-
-
-
-
 {{/block}}
-
-
-
 
 {{/extends}}
