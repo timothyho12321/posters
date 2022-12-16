@@ -26,12 +26,12 @@ app.use(
 
 const landingRoutes = require('./routes/landing');
 const titleRoutes = require('./routes/titles');
-
+const userRoutes = require('./routes/users')
 async function main() {
-  
+
   app.use('/', landingRoutes);
   app.use('/titles', titleRoutes);
-
+  app.use('/users', userRoutes);
 }
 
 main();
