@@ -26,7 +26,7 @@ var bootstrapField = function (name, object) {
 };
 
 
-const createTitleForm = (allMediaProperties = []) => {
+const createTitleForm = (allMediaProperties = [], allTags=[]) => {
 
 
 
@@ -68,6 +68,12 @@ const createTitleForm = (allMediaProperties = []) => {
             widget: widgets.select(),
             choices: allMediaProperties
 
+        }),
+        'tags_id': fields.string({
+            'required': true,
+            errorAfterField: true,
+            widget: widgets.multipleSelect(),
+            choices: allTags
         })
 
 

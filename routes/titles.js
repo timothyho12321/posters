@@ -3,7 +3,7 @@ const { createTitleForm, bootstrapField } = require('../forms');
 const router = express.Router();
 
 // #1 import in the Product model
-const { Title, MediaProperty } = require('../models')
+const { Title, MediaProperty, Tag } = require('../models')
 
 router.get('/', async (req, res) => {
     // #2 - fetch all the products (ie, SELECT * from products)
@@ -20,8 +20,10 @@ router.get('/add', async (req, res) => {
         return [property.get("id"), property.get("name")]
     })
 
+    const allTags = await Tag.fetchAll().map(tag => [tag.get('.id'),
+    tag.get('name')])
 
-    const form = createTitleForm(allMediaProperties);
+    const form = createTitleForm(allMediaProperties, allTags);
     res.render('titles/create', {
         'form': form.toHTML(bootstrapField)
     })
@@ -39,22 +41,33 @@ router.post('/add', async function (req, res) {
         return [property.get("id"), property.get("name")]
     })
 
+    const allTags = await Tag.fetchAll().map(tag => [tag.get('id'),
+    tag.get('name')])
 
-
-    const titleForm = createTitleForm(allMediaProperties);
+    const titleForm = createTitleForm(allMediaProperties, allTags);
     titleForm.handle(req, {
         'success': async function (form) {
-            
+
             const titleObject = new Title();
-            titleObject.set('title', form.data.title);
-            titleObject.set('cost', form.data.cost);
-            titleObject.set('description', form.data.description);
-            titleObject.set('date', form.data.date);
-            titleObject.set('stock', form.data.stock);
-            titleObject.set('height', form.data.height);
-            titleObject.set('width', form.data.width);
-            titleObject.set('media_property_id', form.data.media_property_id);
+            // titleObject.set('title', form.data.title);
+            // titleObject.set('cost', form.data.cost);
+            // titleObject.set('description', form.data.description);
+            // titleObject.set('date', form.data.date);
+            // titleObject.set('stock', form.data.stock);
+            // titleObject.set('height', form.data.height);
+            // titleObject.set('width', form.data.width);
+            // titleObject.set('media_property_id', form.data.media_property_id);
+
+            let { tags_id, ...productData } = form.data;
+            titleObject.set(productData)
             await titleObject.save();
+            console.log("see tags full form",form)
+           console.log(form.data.tags_id)
+            if (tags_id) {
+               
+                await titleObject.tags().attach(tags_id.split(","));
+            }
+
             res.redirect('/titles')
         },
         'empty': async function (form) {
@@ -96,12 +109,12 @@ router.get("/update/:poster_id", async function (req, res) {
     titleForm.fields.title.value = title.get('title');
     titleForm.fields.cost.value = title.get('cost');
     titleForm.fields.description.value = title.get('description');
-    
+
     titleForm.fields.date.value = title.get('date').toISOString();
     titleForm.fields.stock.value = title.get('stock');
     titleForm.fields.height.value = title.get('height');
     titleForm.fields.width.value = title.get('width');
-    
+
 
     titleForm.fields.media_property_id.value = title.get('media_property_id');
 
@@ -157,7 +170,7 @@ router.post('/update/:poster_id', async function (req, res) {
             res.redirect('/titles');
 
         },
-       
+
         'empty': async function (form) {
             // form has no data
 
@@ -179,7 +192,7 @@ router.post('/update/:poster_id', async function (req, res) {
 })
 
 
-router.get('/delete/:poster_id', async function(req,res){
+router.get('/delete/:poster_id', async function (req, res) {
     // get the product that we want to delete
     const title = await Title.where({
         'id': req.params.poster_id
@@ -188,13 +201,13 @@ router.get('/delete/:poster_id', async function(req,res){
     });
 
     // console.log(title);
-    res.render('titles/delete',{
+    res.render('titles/delete', {
         'title': title.toJSON()
     })
 })
 
 
-router.post('/delete/:poster_id', async function(req,res){
+router.post('/delete/:poster_id', async function (req, res) {
     // retrieving the object that represents the row
     // which we want to delete
     const title = await Title.where({

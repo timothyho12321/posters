@@ -19,3 +19,6 @@ VALUES ("BlackPink","Most Famous Girlband","https://www.blackpinkmusic.com/");
 
 INSERT INTO media_properties (name, description,url)
 VALUES ("Beatles","Old English Band","https://www.thebeatles.com/");
+
+
+
