@@ -20,7 +20,7 @@ router.get('/add', async (req, res) => {
         return [property.get("id"), property.get("name")]
     })
 
-    const allTags = await Tag.fetchAll().map(tag => [tag.get('.id'),
+    const allTags = await Tag.fetchAll().map(tag => [tag.get('id'),
     tag.get('name')])
 
     const form = createTitleForm(allMediaProperties, allTags);
@@ -41,8 +41,9 @@ router.post('/add', async function (req, res) {
         return [property.get("id"), property.get("name")]
     })
 
-    const allTags = await Tag.fetchAll().map(tag => [tag.get('id'),
-    tag.get('name')])
+    const allTags = await Tag.fetchAll().map(tag => [tag.get("id"),
+    tag.get("name")])
+
 
     const titleForm = createTitleForm(allMediaProperties, allTags);
     titleForm.handle(req, {
@@ -61,12 +62,18 @@ router.post('/add', async function (req, res) {
             let { tags_id, ...productData } = form.data;
             titleObject.set(productData)
             await titleObject.save();
-            console.log("see tags full form",form)
-           console.log(form.data.tags_id)
+
+            console.log(titleObject)
             if (tags_id) {
-               
+
                 await titleObject.tags().attach(tags_id.split(","));
             }
+
+            req.flash("success_messages", `New Poster
+${titleObject.get('title')} has been created`)
+
+
+
 
             res.redirect('/titles')
         },
@@ -96,14 +103,17 @@ router.get("/update/:poster_id", async function (req, res) {
     const title = await Title.where({
         'id': posterId
     }).fetch({
-        require: true
+        require: true,
+        withRelated: ['tags']
     })
 
     const allMediaProperties = await MediaProperty.fetchAll().map((property) => {
         return [property.get("id"), property.get("name")]
     })
+    const allTags = await Tag.fetchAll().map(tag => [tag.get("id"),
+    tag.get("name")])
 
-    const titleForm = createTitleForm(allMediaProperties)
+    const titleForm = createTitleForm(allMediaProperties, allTags)
 
 
     titleForm.fields.title.value = title.get('title');
@@ -117,6 +127,11 @@ router.get("/update/:poster_id", async function (req, res) {
 
 
     titleForm.fields.media_property_id.value = title.get('media_property_id');
+
+    let selectedTags = await title.related('tags').pluck('id')
+
+    titleForm.fields.tags_id.value = selectedTags;
+
 
     res.render('titles/update', {
         'form': titleForm.toHTML(bootstrapField)
@@ -133,13 +148,17 @@ router.post('/update/:poster_id', async function (req, res) {
         return [property.get("id"), property.get("name")]
     })
 
+    const allTags = await Tag.fetchAll().map(tag => [tag.get("id"),
+    tag.get("name")])
+
     const title = await Title.where({
         'id': posterId
     }).fetch({
-        require: true
+        require: true,
+        withRelated: ['tags']
     })
 
-    const titleForm = createTitleForm(allMediaProperties)
+    const titleForm = createTitleForm(allMediaProperties, allTags)
 
     // pass the request as the first parameter
     // second parameter: object that has three handlers
@@ -166,6 +185,11 @@ router.post('/update/:poster_id', async function (req, res) {
             title.set('width', form.data.width);
             title.set('media_property_id', form.data.media_property_id)
             title.save(); // make the change permanent
+
+            let existingTagIDs = await title.related('tags').pluck('id')
+
+            await title.tags().detach(existingTagIDs);
+            await title.tags().attach(form.data.tags_id.split(','));
 
             res.redirect('/titles');
 

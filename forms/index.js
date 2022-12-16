@@ -72,6 +72,9 @@ const createTitleForm = (allMediaProperties = [], allTags=[]) => {
         'tags_id': fields.string({
             'required': true,
             errorAfterField: true,
+            cssClasses: {
+label: ['form-label']
+            },
             widget: widgets.multipleSelect(),
             choices: allTags
         })

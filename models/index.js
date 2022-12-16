@@ -6,7 +6,7 @@ const Title = bookshelf.model('Title', {
         return this.belongsTo('MediaProperty')
     },
     tags() {
-        return this.belongsToMany('Tag')
+        return this.belongsToMany('Tag', 'titles_tags')
     }
 });
 
@@ -23,7 +23,7 @@ const Tag = bookshelf.model('Tag', {
     titles() {
         // the first parameter of the belongsToMany function is the MODEL NAME
         // that is partaking in the relatonship
-        return this.belongsToMany('Title')
+        return this.belongsToMany('Title',  'titles_tags')
     }
 })
 
