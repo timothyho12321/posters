@@ -1,4 +1,6 @@
 const express = require("express");
+
+const crypto = require('crypto');
 const router = express.Router();
 
 // import in the User model
@@ -6,7 +8,13 @@ const { User } = require('../models');
 
 const { createRegistrationForm, bootstrapField, createLoginForm } = require('../forms');
 
-
+function getHashedPassword(password) {
+    const sha256 = crypto.createHash("sha256");
+    const hash = sha256.update(password).digest('base64');  // when we hash a string, we get a very very very number
+                                                            // changing it to base64 will shorten
+                                                            // base64 --- hexdecimial (0 - F)
+    return hash;
+}
 
 
 
@@ -30,6 +38,7 @@ router.post('/signup', (req, res) => {
 
             const { confirm_password, ...userData } = form.data
 
+            userData.password = getHashedPassword(userData.password)
             user.set(userData)
 
             await user.save();
@@ -86,7 +95,7 @@ router.post('/login', function (req, res) {
                 req.flash("error_messages", "Apologies. You have provided the wrong login details.")
                 res.redirect('/users/login')
             } else {
-                if (user.get('password') === form.data.password) {
+                if (user.get('password') === getHashedPassword(form.data.password)) {
 
                     req.session.user = {
                         id: user.get('id'),
@@ -141,6 +150,16 @@ router.get('/profile', (req, res) => {
     }
 
 
+
+
+})
+
+
+router.get('/logout', (req, res) => {
+
+    req.session.user = null;
+    req.flash("success_messages", "See you again")
+    res.redirect('/users/login')
 
 
 })

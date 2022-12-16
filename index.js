@@ -1,7 +1,7 @@
 const express = require("express");
 const hbs = require("hbs");
 const wax = require("wax-on");
-const session  = require('express-session');
+const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const flash = require('connect-flash');
 
@@ -31,14 +31,14 @@ app.use(
 
 app.use(session({
   store: new FileStore(),  // use files to store sessions
-  secret:"keyboards cat",
+  secret: "keyboards cat",
   resave: false, // if the client access the web server and there's no change to session data, don't resave the session
   saveUninitialized: true // save a new session for each client that does not have a session 
 }))
 
 app.use(flash());
 
-app.use(function(req,res, next){
+app.use(function (req, res, next) {
   // res.locals is an object that store all the placeholders for the hbs file
 
   // req.flash with one parameter, it retrieves all messages belonging to the
@@ -49,6 +49,12 @@ app.use(function(req,res, next){
 })
 
 
+// Share user data with hbs files using global middleware
+app.use(function (req, res, next) {
+  res.locals.user = req.session.user;
+  next();
+
+})
 
 
 const landingRoutes = require('./routes/landing');
