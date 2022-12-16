@@ -77,6 +77,9 @@ const createTitleForm = (allMediaProperties = [], allTags = []) => {
             },
             widget: widgets.multipleSelect(),
             choices: allTags
+        }),
+        'image_url':fields.string({
+            widget: widgets.hidden()
         })
 
 

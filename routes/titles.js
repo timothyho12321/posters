@@ -73,9 +73,6 @@ router.post('/add', checkIfAuthenticated, async function (req, res) {
             req.flash("success_messages", `New Poster
 ${titleObject.get('title')} has been created`)
 
-
-
-
             res.redirect('/titles')
         },
         'empty': async function (form) {
@@ -88,7 +85,10 @@ ${titleObject.get('title')} has been created`)
             // executed if the form has any validation errors
 
             res.render('titles/create', {
-                'form': form.toHTML(bootstrapField)
+                'form': form.toHTML(bootstrapField),
+                cloudinaryName: process.env.CLOUDINARY_NAME,
+                cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+                cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
             })
         }
 
