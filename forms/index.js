@@ -3,6 +3,7 @@ const forms = require("forms");
 // create some shortcuts
 const fields = forms.fields;
 const validators = forms.validators;
+const widgets = forms.widgets;
 
 var bootstrapField = function (name, object) {
     if (!Array.isArray(object.widget.classes)) { object.widget.classes = []; }
@@ -25,41 +26,60 @@ var bootstrapField = function (name, object) {
 };
 
 
-const createProductForm = ()=> {
+const createTitleForm = (allMediaProperties = [], allTags=[]) => {
+
+
 
     return forms.create({
-        'title':fields.string({
-            required:true,
+        'title': fields.string({
+            required: true,
             errorAfterField: true
         }),
-        'cost':fields.number({
-            required:true,
+        'cost': fields.number({
+            required: true,
             errorAfterField: true,
-            validators:[validators.integer()]
+            validators: [validators.integer()]
         }),
-        'description':fields.string({
-            required:true,
+        'description': fields.string({
+            required: true,
             errorAfterField: true
         }),
-        'date':fields.date({
-            required:true,
-            errorAfterField: true
+        'date': fields.date({
+            required: true,
+            errorAfterField: true,
+            validators: [validators.date()]
         }),
-        'stock':fields.number({
-            required:false,
+        'stock': fields.number({
+            required: false,
             errorAfterField: false
         }),
-        'height':fields.number({
-            required:true,
+        'height': fields.number({
+            required: true,
             errorAfterField: true
         }),
-        'width':fields.number({
-            required:true,
+        'width': fields.number({
+            required: true,
             errorAfterField: true
         }),
+        'media_property_id': fields.string({
+            label: "Media Property",
+            required: true,
+            errorAfterField: true,
+            widget: widgets.select(),
+            choices: allMediaProperties
+
+        }),
+        'tags_id': fields.string({
+            'required': true,
+            errorAfterField: true,
+            widget: widgets.multipleSelect(),
+            choices: allTags
+        })
+
+
     })
 
 
 }
 
-module.exports = { bootstrapField, createProductForm }
+module.exports = { bootstrapField, createTitleForm }
