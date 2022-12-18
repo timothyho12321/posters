@@ -26,7 +26,7 @@ router.get('/add', checkIfAuthenticated, async (req, res) => {
 
     const form = createTitleForm(allMediaProperties, allTags);
     res.render('titles/create', {
-        'form': form.toHTML(bootstrapField), 
+        'form': form.toHTML(bootstrapField),
         cloudinaryName: process.env.CLOUDINARY_NAME,
         cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
         cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
@@ -53,6 +53,7 @@ router.post('/add', checkIfAuthenticated, async function (req, res) {
     const titleForm = createTitleForm(allMediaProperties, allTags);
     titleForm.handle(req, {
         'success': async function (form) {
+
 
             const titleObject = new Title();
             // titleObject.set('title', form.data.title);
@@ -138,8 +139,17 @@ router.get("/update/:poster_id", async function (req, res) {
     titleForm.fields.tags_id.value = selectedTags;
 
 
+    titleForm.fields.image_url.value = title.get('image_url');
+
+
+
+
     res.render('titles/update', {
-        'form': titleForm.toHTML(bootstrapField)
+        'form': titleForm.toHTML(bootstrapField),
+        'title': title.toJSON(),
+        cloudinaryName: process.env.CLOUDINARY_NAME,
+        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+        cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
 
     })
 
@@ -189,12 +199,18 @@ router.post('/update/:poster_id', async function (req, res) {
             title.set('height', form.data.height);
             title.set('width', form.data.width);
             title.set('media_property_id', form.data.media_property_id)
+            title.set('image_url', form.data.image_url);
             title.save(); // make the change permanent
 
             let existingTagIDs = await title.related('tags').pluck('id')
 
             await title.tags().detach(existingTagIDs);
             await title.tags().attach(form.data.tags_id.split(','));
+
+
+            req.flash("success_messages", `Your Poster ${title.get('title')} is successfully updated.`)
+
+
 
             res.redirect('/titles');
 
@@ -212,7 +228,11 @@ router.post('/update/:poster_id', async function (req, res) {
             // one or more fields have validation errors
 
             res.render('titles/update', {
-                'form': form.toHTML(bootstrapField)
+                'form': form.toHTML(bootstrapField),
+                'title': title.toJSON(),
+                cloudinaryName: process.env.CLOUDINARY_NAME,
+                cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+                cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
 
             })
         }

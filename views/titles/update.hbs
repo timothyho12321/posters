@@ -5,12 +5,82 @@
 <h1>Update Title</h1>
 
 <form method="POST">
-    <input type="hidden" name="_csrf" value="{{csrfToken}}"/>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
     {{{form}}}
-    <input type="submit" class="btn btn-primary" />
+
+
+
+    <div>
+        {{#if title.image_url}}
+
+        <img src="{{title.image_url}}" id="uploaded_image" />
+        {{else}}
+
+        <img src="" style="display:none" id="uploaded_image" />
+
+        {{/if}}
+
+    </div>
+
+
+    <div>
+        <a href="#" class="btn btn-primary" id="upload_widget">Upload</a>
+    </div>
+    <input type="submit" value="Update Product" class="btn btn-primary" />
+
 </form>
 
 
+
+
+{{/block}}
+
+
+{{#block "js"}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+    integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+    crossorigin="anonymous"></script>
+<script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+<script>
+
+
+    async function generateSignature(callback, params_to_sign) {
+        const response = await axios.get('/cloudinary/sign', {
+            params: {
+                // convert the JSON object to a string
+                params_to_sign: JSON.stringify(params_to_sign)
+            }
+        });
+        callback(response.data);
+    }
+
+    const uploadWidget = cloudinary.createUploadWidget({
+        cloudName: "{{cloudinaryName}}",
+        apiKey: "{{cloudinaryApiKey}}",
+        uploadPreset: "{{cloudinaryPreset}}",
+        // tell the upload widget how to get the signature
+        uploadSignature: generateSignature
+    }, function (error, result) {
+        // check if the image is uploaded successfully
+        if (!error && result && result.event == "success") {
+            console.log("result info is", result.info)
+            const url = result.info.url;
+
+            document.querySelector("#upload_widget").display = "none";
+
+            document.querySelector("#id_image_url").value = url;
+            document.querySelector("#uploaded_image").src = url;
+            document.querySelector("#uploaded_image").style.display = "inline";
+        }
+    })
+
+
+
+    document.querySelector("#upload_widget").addEventListener("click", function () {
+        uploadWidget.open()
+    }, false);
+
+</script>
 {{/block}}
 
 
