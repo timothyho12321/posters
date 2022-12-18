@@ -1,19 +1,140 @@
 const express = require("express");
-const { createTitleForm, bootstrapField } = require('../forms');
+const { createTitleForm, bootstrapField, createSearchForm } = require('../forms');
 const { checkIfAuthenticated } = require("../middlewares");
 const router = express.Router();
 
 // #1 import in the Product model
 const { Title, MediaProperty, Tag } = require('../models')
 
+
+
+// GET TITLES  ROUTE 
 router.get('/', async (req, res) => {
-    // #2 - fetch all the products (ie, SELECT * from products)
-    let titles = await Title.collection().fetch();
-    console.log(titles);
-    res.render('titles/index', {
-        'titles': titles.toJSON() // #3 - convert collection to JSON
+
+    const allMediaProperties = await MediaProperty.fetchAll().map((property) => {
+        return [property.get("id"), property.get("name")]
     })
+
+    allMediaProperties.unshift([0, '----------']);
+
+    const allTags = await Tag.fetchAll().map(tag => [tag.get('id'),
+    tag.get('name')])
+
+    const searchForm = createSearchForm(allMediaProperties, allTags);
+
+    const q = Title.collection();
+
+    searchForm.handle(req, {
+        'empty': async (form) => {
+            let titles = await q.fetch({
+                withRelated: ['media_property', 'tags']
+            })
+
+
+
+            res.render('titles/index', {
+                'titles': titles.toJSON(),
+                'form': form.toHTML(bootstrapField)
+            })
+
+        },
+        'error': async (form) => {
+            let titles = await q.fetch({
+                withRelated: ['media_property', 'tags']
+            })
+
+
+            res.render('titles/index', {
+                'titles': titles.toJSON(),
+                'form': form.toHTML(bootstrapField)
+            })
+
+        },
+        'success': async (form) => {
+
+            if (form.data.title) {
+                q.where('title', 'like', '%' + form.data.title + "%");
+            }
+
+
+            if (form.data.min_cost) {
+                q.where('cost', '>=', form.data.min_cost)
+
+            }
+
+            if (form.data.max_cost) {
+                q.where('cost', '<=', form.data.max_cost)
+
+            }
+
+
+            if (form.data.min_height) {
+                q.where('height', '>=', form.data.min_height)
+
+            }
+
+            if (form.data.max_height) {
+                q.where('height', '<=', form.data.max_height)
+
+            }
+
+            if (form.data.min_width) {
+                q.where('width', '>=', form.data.min_width)
+
+            }
+
+            if (form.data.max_width) {
+                q.where('width', '<=', form.data.max_width)
+
+            }
+
+
+            if (form.data.media_property_id) {
+                q.where('media_property_id', '=', form.data.media_property_id)
+
+            }
+
+            // join titles_tags on titles.id = titles_tags.title_id, WHERE...
+            // 'tag_id' in the where refers to the pivot table
+
+            console.log(form.data.tags_id)
+            if (form.data.tags_id) {
+                q.query('join', 'titles_tags', 'titles.id', 'title_id')
+            
+                .where(
+                    'tag_id', 'in', form.data.tags_id.split(','))
+
+            }
+
+
+
+            const titles = await q.fetch({
+                withRelated: ['tags', 'media_property'] // for each product, load in each of the tag
+            });
+
+            console.log(titles.toJSON())
+
+            res.render('titles/index', {
+                'titles': titles.toJSON(),
+                'form': form.toHTML(bootstrapField)
+            })
+
+        }
+
+
+
+
+    })
+
+
+
+
 })
+
+
+
+
+// ADD TITLES ROUTE 
 
 router.get('/add', checkIfAuthenticated, async (req, res) => {
 
@@ -26,7 +147,11 @@ router.get('/add', checkIfAuthenticated, async (req, res) => {
 
     const form = createTitleForm(allMediaProperties, allTags);
     res.render('titles/create', {
-        'form': form.toHTML(bootstrapField)
+        'form': form.toHTML(bootstrapField),
+        cloudinaryName: process.env.CLOUDINARY_NAME,
+        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+        cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
+
     })
 
 
@@ -49,6 +174,7 @@ router.post('/add', checkIfAuthenticated, async function (req, res) {
     const titleForm = createTitleForm(allMediaProperties, allTags);
     titleForm.handle(req, {
         'success': async function (form) {
+
 
             const titleObject = new Title();
             // titleObject.set('title', form.data.title);
@@ -134,8 +260,17 @@ router.get("/update/:poster_id", async function (req, res) {
     titleForm.fields.tags_id.value = selectedTags;
 
 
+    titleForm.fields.image_url.value = title.get('image_url');
+
+
+
+
     res.render('titles/update', {
-        'form': titleForm.toHTML(bootstrapField)
+        'form': titleForm.toHTML(bootstrapField),
+        'title': title.toJSON(),
+        cloudinaryName: process.env.CLOUDINARY_NAME,
+        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+        cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
 
     })
 
@@ -185,12 +320,18 @@ router.post('/update/:poster_id', async function (req, res) {
             title.set('height', form.data.height);
             title.set('width', form.data.width);
             title.set('media_property_id', form.data.media_property_id)
+            title.set('image_url', form.data.image_url);
             title.save(); // make the change permanent
 
             let existingTagIDs = await title.related('tags').pluck('id')
 
             await title.tags().detach(existingTagIDs);
             await title.tags().attach(form.data.tags_id.split(','));
+
+
+            req.flash("success_messages", `Your Poster ${title.get('title')} is successfully updated.`)
+
+
 
             res.redirect('/titles');
 
@@ -208,7 +349,11 @@ router.post('/update/:poster_id', async function (req, res) {
             // one or more fields have validation errors
 
             res.render('titles/update', {
-                'form': form.toHTML(bootstrapField)
+                'form': form.toHTML(bootstrapField),
+                'title': title.toJSON(),
+                cloudinaryName: process.env.CLOUDINARY_NAME,
+                cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+                cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
 
             })
         }
