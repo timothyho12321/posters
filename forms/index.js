@@ -78,7 +78,7 @@ const createTitleForm = (allMediaProperties = [], allTags = []) => {
             widget: widgets.multipleSelect(),
             choices: allTags
         }),
-        'image_url':fields.string({
+        'image_url': fields.string({
             widget: widgets.hidden()
         })
 
@@ -145,83 +145,103 @@ const createLoginForm = () => {
 
 }
 
-const createSearchForm = (allMediaProperties=[], allTags=[]) =>{
-return forms.create({
-'title': fields.string({
-    required:false,
-    errorAfterField:true,
-    cssClasses:{
-        label:['form-label']
-    }
-}),
-'min_cost':fields.string({
-    required:false,
-    errorAfterField:true,
-    cssClasses:{
-        label:['form-label']
-    },
-    'validators': [validators.integer()]
-}),
-'max_cost':fields.string({
-    required:false,
-    errorAfterField:true,
-    cssClasses:{
-        label:['form-label']
-    },
-    'validators': [validators.integer()]
+const createSearchForm = (allMediaProperties = [], allTags = []) => {
+    return forms.create({
+        'title': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label'],
 
-}),
-'height':fields.string({
-    required:false,
-    errorAfterField:true,
-    cssClasses:{
-        label:['form-label']
-    },
-    'validators': [validators.integer()]
+            }
+        }),
+        'min_cost': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            'validators': [validators.integer()]
+        }),
+        'max_cost': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            'validators': [validators.integer()]
 
-}),
-'width':fields.string({
-    required:false,
-    errorAfterField:true,
-    cssClasses:{
-        label:['form-label']
-    },
-    'validators': [validators.integer()]
+        }),
+        'min_height': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            'validators': [validators.integer()]
 
-}),
+        }), 'max_height': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            'validators': [validators.integer()]
 
-'media_property_id':fields.string({
-    label:'Category',
-    required:false,
-    errorAfterField:true,
-    cssClasses:{
-        label:['form-label']
-    },
-    widget: widgets.select(),
-    choices: allMediaProperties
+        }),
+        'min_width': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            'validators': [validators.integer()]
 
-}),
-'tags_id':fields.string({
-    label:'Category',
-    required:false,
-    errorAfterField:true,
-    cssClasses:{
-        label:['form-label']
-    },
-    widget: widgets.select(),
-    choices: allTags
+        }), 'max_width': fields.string({
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            'validators': [validators.integer()]
 
-})
+        }),
+
+        'media_property_id': fields.string({
+            label: 'Media Property',
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            widget: widgets.select(),
+            choices: allMediaProperties
+
+        }),
+        'tags_id': fields.string({
+            label: 'Category',
+            required: false,
+            errorAfterField: true,
+            cssClasses: {
+                label: ['form-label']
+            },
+            widget: widgets.select(),
+            choices: allTags
+
+        })
 
 
 
 
-})}
+    })
+}
 
 
 
 
 
 
-module.exports = { bootstrapField, createTitleForm, createRegistrationForm,
-    createLoginForm, createSearchForm  }
+module.exports = {
+    bootstrapField, createTitleForm, createRegistrationForm,
+    createLoginForm, createSearchForm
+}

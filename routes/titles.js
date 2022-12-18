@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
                 withRelated: ['media_property', 'tags']
             })
 
-            
+
 
             res.render('titles/index', {
                 'titles': titles.toJSON(),
@@ -52,13 +52,67 @@ router.get('/', async (req, res) => {
         },
         'success': async (form) => {
 
-            if (form.data.title){
-                q.where('title','like','%' + form.data.title +"%");
+            if (form.data.title) {
+                q.where('title', 'like', '%' + form.data.title + "%");
             }
 
+
+            if (form.data.min_cost) {
+                q.where('cost', '>=', form.data.min_cost)
+
+            }
+
+            if (form.data.max_cost) {
+                q.where('cost', '<=', form.data.max_cost)
+
+            }
+
+
+            if (form.data.min_height) {
+                q.where('height', '>=', form.data.min_height)
+
+            }
+
+            if (form.data.max_height) {
+                q.where('height', '<=', form.data.max_height)
+
+            }
+
+            if (form.data.min_width) {
+                q.where('width', '>=', form.data.min_width)
+
+            }
+
+            if (form.data.max_width) {
+                q.where('width', '<=', form.data.max_width)
+
+            }
+
+
+            if (form.data.media_property_id) {
+                q.where('media_property_id', '=', form.data.media_property_id)
+
+            }
+
+            // join titles_tags on titles.id = titles_tags.title_id, WHERE...
+            // 'tag_id' in the where refers to the pivot table
+
+            console.log(form.data.tags_id)
+            if (form.data.tags_id) {
+                q.query('join', 'titles_tags', 'titles.id', 'title_id')
+            
+                .where(
+                    'tag_id', 'in', form.data.tags_id.split(','))
+
+            }
+
+
+
             const titles = await q.fetch({
-                withRelated:['tags', 'media_property'] // for each product, load in each of the tag
+                withRelated: ['tags', 'media_property'] // for each product, load in each of the tag
             });
+
+            console.log(titles.toJSON())
 
             res.render('titles/index', {
                 'titles': titles.toJSON(),
@@ -73,15 +127,8 @@ router.get('/', async (req, res) => {
     })
 
 
-    // #2 - fetch all the products (ie, SELECT * from products)
-    let titles = await Title.collection().fetch();
-    // console.log(titles);
 
 
-    // res.render('titles/index', {
-    //     'titles': titles.toJSON(),
-    //     'form': searchForm.toHTML(bootstrapField)
-    // })
 })
 
 
