@@ -26,7 +26,11 @@ router.get('/add', checkIfAuthenticated, async (req, res) => {
 
     const form = createTitleForm(allMediaProperties, allTags);
     res.render('titles/create', {
-        'form': form.toHTML(bootstrapField)
+        'form': form.toHTML(bootstrapField), 
+        cloudinaryName: process.env.CLOUDINARY_NAME,
+        cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+        cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
+
     })
 
 
