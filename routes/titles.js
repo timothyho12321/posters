@@ -1,19 +1,93 @@
 const express = require("express");
-const { createTitleForm, bootstrapField } = require('../forms');
+const { createTitleForm, bootstrapField, createSearchForm } = require('../forms');
 const { checkIfAuthenticated } = require("../middlewares");
 const router = express.Router();
 
 // #1 import in the Product model
 const { Title, MediaProperty, Tag } = require('../models')
 
+
+
+// GET TITLES  ROUTE 
 router.get('/', async (req, res) => {
+
+    const allMediaProperties = await MediaProperty.fetchAll().map((property) => {
+        return [property.get("id"), property.get("name")]
+    })
+
+    allMediaProperties.unshift([0, '----------']);
+
+    const allTags = await Tag.fetchAll().map(tag => [tag.get('id'),
+    tag.get('name')])
+
+    const searchForm = createSearchForm(allMediaProperties, allTags);
+
+    const q = Title.collection();
+
+    searchForm.handle(req, {
+        'empty': async (form) => {
+            let titles = await q.fetch({
+                withRelated: ['media_property', 'tags']
+            })
+
+            
+
+            res.render('titles/index', {
+                'titles': titles.toJSON(),
+                'form': form.toHTML(bootstrapField)
+            })
+
+        },
+        'error': async (form) => {
+            let titles = await q.fetch({
+                withRelated: ['media_property', 'tags']
+            })
+
+
+            res.render('titles/index', {
+                'titles': titles.toJSON(),
+                'form': form.toHTML(bootstrapField)
+            })
+
+        },
+        'success': async (form) => {
+
+            if (form.data.title){
+                q.where('title','like','%' + form.data.title +"%");
+            }
+
+            const titles = await q.fetch({
+                withRelated:['tags', 'media_property'] // for each product, load in each of the tag
+            });
+
+            res.render('titles/index', {
+                'titles': titles.toJSON(),
+                'form': form.toHTML(bootstrapField)
+            })
+
+        }
+
+
+
+
+    })
+
+
     // #2 - fetch all the products (ie, SELECT * from products)
     let titles = await Title.collection().fetch();
-    console.log(titles);
-    res.render('titles/index', {
-        'titles': titles.toJSON() // #3 - convert collection to JSON
-    })
+    // console.log(titles);
+
+
+    // res.render('titles/index', {
+    //     'titles': titles.toJSON(),
+    //     'form': searchForm.toHTML(bootstrapField)
+    // })
 })
+
+
+
+
+// ADD TITLES ROUTE 
 
 router.get('/add', checkIfAuthenticated, async (req, res) => {
 

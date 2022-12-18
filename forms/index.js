@@ -145,10 +145,83 @@ const createLoginForm = () => {
 
 }
 
+const createSearchForm = (allMediaProperties=[], allTags=[]) =>{
+return forms.create({
+'title': fields.string({
+    required:false,
+    errorAfterField:true,
+    cssClasses:{
+        label:['form-label']
+    }
+}),
+'min_cost':fields.string({
+    required:false,
+    errorAfterField:true,
+    cssClasses:{
+        label:['form-label']
+    },
+    'validators': [validators.integer()]
+}),
+'max_cost':fields.string({
+    required:false,
+    errorAfterField:true,
+    cssClasses:{
+        label:['form-label']
+    },
+    'validators': [validators.integer()]
+
+}),
+'height':fields.string({
+    required:false,
+    errorAfterField:true,
+    cssClasses:{
+        label:['form-label']
+    },
+    'validators': [validators.integer()]
+
+}),
+'width':fields.string({
+    required:false,
+    errorAfterField:true,
+    cssClasses:{
+        label:['form-label']
+    },
+    'validators': [validators.integer()]
+
+}),
+
+'media_property_id':fields.string({
+    label:'Category',
+    required:false,
+    errorAfterField:true,
+    cssClasses:{
+        label:['form-label']
+    },
+    widget: widgets.select(),
+    choices: allMediaProperties
+
+}),
+'tags_id':fields.string({
+    label:'Category',
+    required:false,
+    errorAfterField:true,
+    cssClasses:{
+        label:['form-label']
+    },
+    widget: widgets.select(),
+    choices: allTags
+
+})
+
+
+
+
+})}
+
 
 
 
 
 
 module.exports = { bootstrapField, createTitleForm, createRegistrationForm,
-    createLoginForm  }
+    createLoginForm, createSearchForm  }

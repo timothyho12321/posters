@@ -1,6 +1,15 @@
 {{#extends 'base'}}
 
 {{#block "content"}}
+
+<form method="GET">
+    {{{form}}}
+    <input type="submit" class="btn btn-primary mb-3 mt-3" value="Search" />
+
+
+</form>
+
+
 <h1>All Titles</h1>
 <table class="table">
     <thead>
@@ -12,6 +21,7 @@
         <th>Height</th>
         <th>Width</th>
         <th>Media Property</th>
+        <th>Tags</th>
         <th></th>
 
     </thead>
@@ -28,11 +38,17 @@
             <td>{{this.height}}</td>
             <td>{{this.width}}</td>
             <td>{{this.media_property_id}}</td>
-<td>
-    <a href="/titles/update/{{this.id}}" class="btn btn-primary btn-sm"/>Edit</a>
-    <a href="/titles/delete/{{this.id}}" class="btn btn-danger btn-sm"/>Delete</a>
-    
-</td>
+            <td>
+                {{#each this.tags}}
+                <span class="badge bg-primary">{{this.name}}</span>
+                {{/each}}
+
+            </td>
+            <td>
+                <a href="/titles/update/{{this.id}}" class="btn btn-primary btn-sm" />Edit</a>
+                <a href="/titles/delete/{{this.id}}" class="btn btn-danger btn-sm" />Delete</a>
+
+            </td>
         </tr>
         {{/each}}
     </tbody>
