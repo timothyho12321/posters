@@ -6,7 +6,7 @@ const getCart = async (userId) => {
         'user_id': userId
     }).fetch({
         require: false,
-        withRelated: ['title', 'title.media_property_id']
+        withRelated: ['title', 'title.media_property', 'title.tags']
     })
 
 }
@@ -54,7 +54,7 @@ async function removeFromCart(userId, titleId) {
 
 async function updateQuantity(userId, titleId, newQuantity) {
 
-    const cartItem = await getProductProductAndUser(userId, titleId);
+    const cartItem = await getCartItemByUserAndTitle(userId, titleId);
     
     if (cartItem) {
         cartItem.set('quantity', newQuantity);

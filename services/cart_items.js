@@ -6,21 +6,41 @@ class CartServices {
     }
 
 
-async addToCart(titleId, quantity){
+    async addToCart(titleId, quantity) {
 
-let cartItem = await getCartItemByUserAndTitle(this.user_id, titleId);
+        let cartItem = await cartDataLayer.getCartItemByUserAndTitle(this.user_id, titleId);
 
-if (cartItem) {
-    return await cartDataLayer.updateQuantity(this.user_id, productId, cartItem.get('quantity')+ 1);
-} else {
-    let newCartItem = cartDataLayer.createCartItem(this.user_id, titleId, quantity);
-    return newCartItem;
-    //STOP HERE TO CONTINUE 
+        if (cartItem) {
+            return await cartDataLayer.updateQuantity(this.user_id, titleId, cartItem.get('quantity') + 1);
+        } else {
+            let newCartItem = cartDataLayer.createCartItem(this.user_id, titleId, quantity);
+            return newCartItem;
+
+        }
+
+
+    }
+
+    async remove(titleId) {
+        return await cartDataLayer.removeFromCart(this.user_id, titleId);
+
+
+    }
+
+
+    async setQuantity(titleId, quantity) {
+        return await cartDataLayer.updateQuantity(this.user_id, titleId, quantity);
+
+
+    }
+
+    async getCart() {
+        return await cartDataLayer.getCart(this.user_id);
+
+
+    }
+
+
 }
 
-
-}
-
-
-
-}
+module.exports = {CartServices};
