@@ -1,4 +1,5 @@
 const express = require("express");
+const dataLayer = require('../dal/titles')
 const { createTitleForm, bootstrapField, createSearchForm } = require('../forms');
 const { checkIfAuthenticated } = require("../middlewares");
 const router = express.Router();
@@ -11,9 +12,7 @@ const { Title, MediaProperty, Tag } = require('../models')
 // GET TITLES  ROUTE 
 router.get('/', async (req, res) => {
 
-    const allMediaProperties = await MediaProperty.fetchAll().map((property) => {
-        return [property.get("id"), property.get("name")]
-    })
+    const allMediaProperties = await dataLayer.getAllMediaProperties();
 
     allMediaProperties.unshift([0, '----------']);
 
@@ -89,10 +88,10 @@ router.get('/', async (req, res) => {
             }
 
 
-            if (form.data.media_property_id) {
-                q.where('media_property_id', '=', form.data.media_property_id)
+            // if (form.data.media_property_id) {
+            //     q.where('media_property_id', '=', form.data.media_property_id)
 
-            }
+            // }
 
             // join titles_tags on titles.id = titles_tags.title_id, WHERE...
             // 'tag_id' in the where refers to the pivot table
