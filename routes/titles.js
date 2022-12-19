@@ -97,21 +97,32 @@ router.get('/', async (req, res) => {
             // 'tag_id' in the where refers to the pivot table
 
 
+
+
+
             // NOT WORKING 
             // console.log(form.data.tags_id)
             // if (form.data.tags_id) {
             //     q.query('join', 'titles_tags', 'titles.id', 'title_id')
-            
+
             //     .where(
             //         'tag_id', 'in', form.data.tags_id.split(','))
 
             // }
 
 
+            if (form.data.tags_id) {
+                // ...JOIN products_tags ON products.id = products_tags.product_id
+                q.query('join', 'titles_tags', 'titles.id', 'title_id')
+                    .where('tag_id', 'in', form.data.tags_id.split(','))
+            }
 
-            const titles = await q.fetch({
-                withRelated: ['tags', 'media_property'] // for each product, load in each of the tag
-            });
+
+            const titles = await dataLayer.getAllTitles(q);
+
+            // const titles = await q.fetch({
+            //     withRelated: ['tags', 'media_property'] // for each product, load in each of the tag
+            // });
 
             console.log(titles.toJSON())
 
@@ -176,26 +187,27 @@ router.post('/add', checkIfAuthenticated, async function (req, res) {
     titleForm.handle(req, {
         'success': async function (form) {
 
+            const titleObject = await dataLayer.createNewTitle(form);
 
-            const titleObject = new Title();
-            // titleObject.set('title', form.data.title);
-            // titleObject.set('cost', form.data.cost);
-            // titleObject.set('description', form.data.description);
-            // titleObject.set('date', form.data.date);
-            // titleObject.set('stock', form.data.stock);
-            // titleObject.set('height', form.data.height);
-            // titleObject.set('width', form.data.width);
-            // titleObject.set('media_property_id', form.data.media_property_id);
+            // const titleObject = new Title();
+            // // titleObject.set('title', form.data.title);
+            // // titleObject.set('cost', form.data.cost);
+            // // titleObject.set('description', form.data.description);
+            // // titleObject.set('date', form.data.date);
+            // // titleObject.set('stock', form.data.stock);
+            // // titleObject.set('height', form.data.height);
+            // // titleObject.set('width', form.data.width);
+            // // titleObject.set('media_property_id', form.data.media_property_id);
 
-            let { tags_id, ...productData } = form.data;
-            titleObject.set(productData)
-            await titleObject.save();
+            // let { tags_id, ...productData } = form.data;
+            // titleObject.set(productData)
+            // await titleObject.save();
 
-            console.log(titleObject)
-            if (tags_id) {
+            // console.log(titleObject)
+            // if (tags_id) {
 
-                await titleObject.tags().attach(tags_id.split(","));
-            }
+            //     await titleObject.tags().attach(tags_id.split(","));
+            // }
 
             req.flash("success_messages", `New Poster
 ${titleObject.get('title')} has been created`)
@@ -228,12 +240,14 @@ router.get("/update/:poster_id", async function (req, res) {
 
     const posterId = req.params.poster_id;
 
-    const title = await Title.where({
-        'id': posterId
-    }).fetch({
-        require: true,
-        withRelated: ['tags']
-    })
+    const title = await dataLayer.findOneTitle(posterId);
+
+    // const title = await Title.where({
+    //     'id': posterId
+    // }).fetch({
+    //     require: true,
+    //     withRelated: ['tags']
+    // })
 
     const allMediaProperties = await MediaProperty.fetchAll().map((property) => {
         return [property.get("id"), property.get("name")]

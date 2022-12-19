@@ -225,7 +225,7 @@ const createSearchForm = (allMediaProperties = [], allTags = []) => {
             cssClasses: {
                 label: ['form-label']
             },
-            widget: widgets.select(),
+            widget: widgets.multipleSelect(),
             choices: allTags
 
         })
