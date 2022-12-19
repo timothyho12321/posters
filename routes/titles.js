@@ -97,14 +97,16 @@ router.get('/', async (req, res) => {
             // join titles_tags on titles.id = titles_tags.title_id, WHERE...
             // 'tag_id' in the where refers to the pivot table
 
-            console.log(form.data.tags_id)
-            if (form.data.tags_id) {
-                q.query('join', 'titles_tags', 'titles.id', 'title_id')
-            
-                .where(
-                    'tag_id', 'in', form.data.tags_id.split(','))
 
-            }
+            // NOT WORKING 
+            // console.log(form.data.tags_id)
+            // if (form.data.tags_id) {
+            //     q.query('join', 'titles_tags', 'titles.id', 'title_id')
+            
+            //     .where(
+            //         'tag_id', 'in', form.data.tags_id.split(','))
+
+            // }
 
 
 
