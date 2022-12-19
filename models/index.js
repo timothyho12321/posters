@@ -23,15 +23,24 @@ const Tag = bookshelf.model('Tag', {
     titles() {
         // the first parameter of the belongsToMany function is the MODEL NAME
         // that is partaking in the relatonship
-        return this.belongsToMany('Title',  'titles_tags')
+        return this.belongsToMany('Title', 'titles_tags')
     }
 })
 
 const User = bookshelf.model('User', {
-tableName:"users"
+    tableName: "users"
+
+})
+
+const CartItem = bookshelf.model('CartItem', {
+    tableName: 'cart_items',
+    title() {
+        return this.belongsTo('Title')
+
+    }
 
 })
 
 
-module.exports = { Title, MediaProperty, Tag, User };
+module.exports = { Title, MediaProperty, Tag, User, CartItem };
 
