@@ -58,7 +58,10 @@
         <div>
 
           {{#if user}}
-          Good to see you, {{user.username}} <a href="/users/logout" class="btn btn-danger btn-sm">Logout</a>
+          Good to see you, {{user.username}} 
+          <a href="/users/logout" class="btn btn-danger btn-sm">Logout</a>
+          <a href="/cart" class="btn btn-success btn-sm">Cart ({{cartItemCount}})</a>
+          
           {{else}}
           Hi guest <a href="/users/login" class="btn btn-success btn-sm">Login</a>
           {{/if}}
