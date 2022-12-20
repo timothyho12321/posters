@@ -68,9 +68,14 @@ router.get('/', checkIfAuthenticated, async (req, res) => {
 
     console.log("before render the checkout page ran")
     const stripeSession = await Stripe.checkout.sessions.create(payment);
+
+    
+    console.log(stripeSession);
+ 
+
     res.render('checkout/checkout', {
         'sessionId': stripeSession.id,
-        'publishableKey': process.env.STRIPE_PUBLISHABLE_KEY
+        'publishableKey': process.env.STRIPE_PUBLISHABLE_KEYS
 
 
     })
