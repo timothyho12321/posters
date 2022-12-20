@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
 
     console.log("get ran")
     let checkTitle = await titlesDataLayer.getAllTitlesAPI()
-    console.log(checkTitle);
+    // console.log(checkTitle);
     res.send(await titlesDataLayer.getAllTitlesAPI())
 
 
@@ -18,12 +18,14 @@ router.get('/', async (req, res) => {
 
 
 router.post('/', async (req, res) => {
+
+
     console.log("post ran")
     const titleForm = createTitleForm();
     titleForm.handle(req, {
         'success': async function (form) {
             console.log("success add ran")
-            const title = await titlesDataLayer.createNewTitle(form.data);
+            const title = await titlesDataLayer.createNewTitle(form);
             res.json(title.toJSON());
 
         },
@@ -56,6 +58,7 @@ router.post('/', async (req, res) => {
 
 
 })
+
 
 
 module.exports = router;

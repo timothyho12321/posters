@@ -65,7 +65,8 @@ app.use(function (req, res, next) {
 const csrfInstance = csrf();
 app.use(function (req, res, next) {
 
-  if (req.url == "/checkout/process_payment") {
+  if (req.url == "/checkout/process_payment" || 
+  req.url.slice(0,5)=="/api/") {
     return next();
 
   }
