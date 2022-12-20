@@ -133,7 +133,8 @@ const { CartServices } = require('./services/cart_items');
 
 // import api routes
 const api = {
-  titles: require('./routes/api/titles')
+  titles: require('./routes/api/titles'),
+  users: require('./routes/api/users')
 }
 
 
@@ -149,7 +150,7 @@ async function main() {
 
   // API routes
 app.use('/api/titles', express.json(), api.titles)
-
+app.use('/api/users', express.json(), api.users)
 }
 
 main();
