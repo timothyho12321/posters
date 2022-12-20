@@ -61,16 +61,13 @@ app.use(function (req, res, next) {
 
 
 const csrfInstance = csrf();
-app.use(function (req, res, next) {
+app.use(function (req,res,next) {
 
-  if (req.url = "/checkout/process_payment") {
+  if (req.url == "/checkout/process_payment") {
     return next();
 
   }
-  csrfInstance(req, res, next);
-
-
-  //STOP HERE line 73
+  csrfInstance(req,res,next);
 
 })
 
@@ -91,7 +88,14 @@ app.use(function (err, req, res, next) {
 app.use(function (req, res, next) {
   // req.csrfToken() will return a valid CSRF token
   // and we make it available to all hbs files via `res.locals.csrfToken`
-  res.locals.csrfToken = req.csrfToken();
+
+  if (req.csrfToken) {
+
+    res.locals.csrfToken = req.csrfToken();
+
+  }
+
+
   next();
 })
 

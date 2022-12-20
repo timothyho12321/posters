@@ -8,7 +8,7 @@ const Stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
 router.get('/', checkIfAuthenticated, async (req, res) => {
 
-    console.log("checkout begin to run");
+    // console.log("checkout begin to run");
     const cart = new CartServices(req.session.user.id);
 
     let items = await cart.getCart();
@@ -66,13 +66,15 @@ router.get('/', checkIfAuthenticated, async (req, res) => {
     }
 
 
-    console.log("before render the checkout page ran")
+    // console.log("before render the checkout page ran")
     const stripeSession = await Stripe.checkout.sessions.create(payment);
 
 
-    console.log(stripeSession);
+    // console.log(stripeSession);
 
-
+    // res.send("Can resend page by res.send")
+    console.log(stripeSession.id);
+    console.log(process.env.STRIPE_PUBLISHABLE_KEYS);
     res.render('checkout/checkout', {
         'sessionId': stripeSession.id,
         'publishableKey': process.env.STRIPE_PUBLISHABLE_KEYS
