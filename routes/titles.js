@@ -377,7 +377,7 @@ router.post('/update/:poster_id', async function (req, res) {
 })
 
 
-router.get('/delete/:poster_id', async function (req, res) {
+router.get('/delete/:poster_id', checkIfAuthenticated, async function (req, res) {
     // get the product that we want to delete
     const title = await Title.where({
         'id': req.params.poster_id
@@ -392,7 +392,7 @@ router.get('/delete/:poster_id', async function (req, res) {
 })
 
 
-router.post('/delete/:poster_id', async function (req, res) {
+router.post('/delete/:poster_id', checkIfAuthenticated, async function (req, res) {
     // retrieving the object that represents the row
     // which we want to delete
     const title = await Title.where({

@@ -129,6 +129,13 @@ const shoppingRoutes = require('./routes/shoppingCart')
 const checkoutRoutes = require('./routes/checkout')
 const { CartServices } = require('./services/cart_items');
 
+
+// import api routes
+const api = {
+  titles: require('./routes/api/titles')
+}
+
+
 async function main() {
 
   app.use('/', landingRoutes);
@@ -137,6 +144,11 @@ async function main() {
   app.use('/cloudinary', cloudinaryRoutes)
   app.use('/cart', shoppingRoutes);
   app.use('/checkout', checkoutRoutes)
+
+
+  // API routes
+app.use('/api/titles', express.json(), api.titles)
+
 }
 
 main();
