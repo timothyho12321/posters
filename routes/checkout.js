@@ -56,8 +56,8 @@ router.get('/', checkIfAuthenticated, async (req, res) => {
         payment_method_types: ["card"],
         mode: 'payment',
         line_items: lineItems,
-        success_url: "http://www.google.com",
-        cancel_url: "http://www.youtube.com",
+        success_url: process.env.STRIPE_SUCCESS_URL,
+        cancel_url: process.env.STRIPE_CANCELLED_URL,
         metadata: {
             'orders': metaData
         }
@@ -73,8 +73,7 @@ router.get('/', checkIfAuthenticated, async (req, res) => {
     // console.log(stripeSession);
 
     // res.send("Can resend page by res.send")
-    console.log(stripeSession.id);
-    console.log(process.env.STRIPE_PUBLISHABLE_KEYS);
+    
     res.render('checkout/checkout', {
         'sessionId': stripeSession.id,
         'publishableKey': process.env.STRIPE_PUBLISHABLE_KEYS
@@ -113,8 +112,9 @@ router.post('/process_payment', express.raw({ type: 'application/json' }),
 
 
         if (event.type == "checkout.session.completed") {
-            console.log(event.data.object)
-
+            // console.log(event.data.object)
+            // console.log("the webhook route ran")
+            //SECOND PART OF PROJECT 3 IMPLEMENTATION 
             //TO CONTINUE FROM HERE TO CREATE NEW ORDER, SET DELIVERY STATUS, SEND RECEIPT PDF
 
 
@@ -127,6 +127,20 @@ router.post('/process_payment', express.raw({ type: 'application/json' }),
 
 
     })
+
+
+router.get('/success', function (req, res) {
+    res.render('checkout/success')
+
+
+})
+
+
+router.get('/cancelled', function (req, res) {
+    res.render('checkout/cancelled')
+
+
+})
 
 
 module.exports = router;
