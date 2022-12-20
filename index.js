@@ -6,7 +6,9 @@ const FileStore = require('session-file-store')(session);
 const flash = require('connect-flash');
 const csrf = require('csurf');
 
+
 require("dotenv").config();
+
 
 // create an instance of express app
 let app = express();
@@ -61,13 +63,13 @@ app.use(function (req, res, next) {
 
 
 const csrfInstance = csrf();
-app.use(function (req,res,next) {
+app.use(function (req, res, next) {
 
   if (req.url == "/checkout/process_payment") {
     return next();
 
   }
-  csrfInstance(req,res,next);
+  csrfInstance(req, res, next);
 
 })
 
@@ -101,6 +103,23 @@ app.use(function (req, res, next) {
 
 
 
+app.use(async function (req, res, next) {
+  if (req.session.user) {
+
+    let cart = new CartServices(req.session.user.id)
+    const cartItems = await cart.getCart()
+
+    res.locals.cartItemCount = cartItems.toJSON().length;
+  } else {
+    res.locals.cartItemCount = 0;
+
+  }
+  next();
+
+})
+
+
+
 
 const landingRoutes = require('./routes/landing');
 const titleRoutes = require('./routes/titles');
@@ -108,6 +127,7 @@ const userRoutes = require('./routes/users')
 const cloudinaryRoutes = require('./routes/cloudinary')
 const shoppingRoutes = require('./routes/shoppingCart')
 const checkoutRoutes = require('./routes/checkout')
+const { CartServices } = require('./services/cart_items');
 
 async function main() {
 
