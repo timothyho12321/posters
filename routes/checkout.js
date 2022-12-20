@@ -69,9 +69,9 @@ router.get('/', checkIfAuthenticated, async (req, res) => {
     console.log("before render the checkout page ran")
     const stripeSession = await Stripe.checkout.sessions.create(payment);
 
-    
+
     console.log(stripeSession);
- 
+
 
     res.render('checkout/checkout', {
         'sessionId': stripeSession.id,
@@ -82,5 +82,49 @@ router.get('/', checkIfAuthenticated, async (req, res) => {
 
 
 })
+
+
+router.post('/process_payment', express.raw({ type: 'application/json' }),
+    async (req, res) => {
+
+        let payload = req.body;
+        let endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
+        let signature = req.headers["stripe-signature"];
+
+
+        let event = null;
+
+        try {
+            event = Stripe.webhooks.constructEvent(payload, signature, endpointSecret);
+
+
+
+        } catch (e) {
+
+            res.status(500)
+            res.send({
+                'error': e.message
+
+            })
+
+        }
+
+
+        if (event.type == "checkout.session.completed") {
+            console.log(event.data.object)
+
+            //TO CONTINUE FROM HERE TO CREATE NEW ORDER, SET DELIVERY STATUS, SEND RECEIPT PDF
+
+
+
+        }
+
+        res.sendStatus(200);
+
+
+
+
+    })
+
 
 module.exports = router;

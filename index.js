@@ -56,7 +56,24 @@ app.use(function (req, res, next) {
 
 })
 
-app.use(csrf());
+//OLD VERSION CSRF 
+// app.use(csrf());
+
+
+const csrfInstance = csrf();
+app.use(function (req, res, next) {
+
+  if (req.url = "/checkout/process_payment") {
+    return next();
+
+  }
+  csrfInstance(req, res, next);
+
+
+  //STOP HERE line 73
+
+})
+
 
 app.use(function (err, req, res, next) {
   // if the function for app.use has 4 parameters
@@ -71,7 +88,7 @@ app.use(function (err, req, res, next) {
   }
 })
 
-app.use(function(req,res,next){
+app.use(function (req, res, next) {
   // req.csrfToken() will return a valid CSRF token
   // and we make it available to all hbs files via `res.locals.csrfToken`
   res.locals.csrfToken = req.csrfToken();
