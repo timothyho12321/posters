@@ -40,12 +40,12 @@ const checkIfAuthenticatedJWT = (req, res, next) => {
         res.sendStatus(401);
 
     }
-    // CHECK THIS FOR BUGS
+    
 
 
 }
 
 
 module.exports = {
-    checkIfAuthenticated
+    checkIfAuthenticated, checkIfAuthenticatedJWT
 }

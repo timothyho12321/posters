@@ -4,6 +4,7 @@ const crypto = require('crypto');
 
 const jwt = require('jsonwebtoken');
 const { User } = require('../../models');
+const { checkIfAuthenticatedJWT } = require('../../middlewares');
 
 
 
@@ -49,6 +50,14 @@ router.post('/login', async (req, res) => {
         })
     }
 
+
+})
+
+
+router.get('/profile', checkIfAuthenticatedJWT, function (req, res) {
+    res.json({
+        "profile": req.user
+    })
 
 })
 
