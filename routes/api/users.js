@@ -3,21 +3,23 @@ const router = express.Router();
 const crypto = require('crypto');
 
 const jwt = require('jsonwebtoken');
-const { User } = require('../../models');
+const { User, BlackListedToken } = require('../../models');
 const { checkIfAuthenticatedJWT } = require('../../middlewares');
 
 
 
 
-const generateAccessToken = (user) => {
+const generateAccessToken = (user, tokenSecret, expiryIn) => {
+    //user is converted to userObject and passed in to generateAccessToken
     return jwt.sign({
-        'username': user.get('username'),
-        'id': user.get('id'),
-        'email': user.get('email')
 
 
-    }, process.env.TOKEN_SECRET, {
-        expiresIn: "1h"
+        'username': user.username,
+        'id': user.id,
+        'email': user.email
+
+    }, tokenSecret, {
+        expiresIn: expiryIn
     });
 
 }
@@ -32,7 +34,7 @@ const getHashedPassword = (password) => {
 
 
 router.post('/login', async (req, res) => {
-    console.log("user login for jwt ran")
+
     let user = await User.where({
         'email': req.body.email
     }).fetch({
@@ -40,10 +42,22 @@ router.post('/login', async (req, res) => {
     })
 
     if (user && user.get('password') == getHashedPassword(req.body.password)) {
-        let accessToken = generateAccessToken(user)
-        
-        res.send({ accessToken })
-        
+
+        const userObject = {
+            'username': user.get('username'),
+            'email': user.get('email'),
+            'id': user.get('id')
+        }
+
+        let accessToken = generateAccessToken(userObject, process.env.TOKEN_SECRET, '15m')
+        let refreshToken = generateAccessToken(userObject, process.env.REFRESH_TOKEN_SECRET, '7d')
+
+
+        res.json({
+            'accessToken': accessToken,
+            'refreshToken': refreshToken
+        })
+
 
     } else {
         res.send({
@@ -55,12 +69,96 @@ router.post('/login', async (req, res) => {
 })
 
 
+router.post('/refresh', async (req, res) => {
+    let refreshToken = req.body.refreshToken;
+
+    if (!refreshToken) {
+        res.status(403);
+        res.json({
+            'error': "There was no refresh token submitted"
+        })
+        return;
+    }
+
+    const blackListedToken = await BlackListedToken.where({
+        'token': refreshToken
+    }).fetch({
+        require: false
+    })
+
+
+    if (blackListedToken) {
+        res.status(403);
+        res.json({
+            'error': 'Sorry, your refresh token has been blacklisted. Login again to create a new token'
+        })
+        return;
+    }
+
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+        if (err) {
+            res.status(403);
+            res.json({
+                'error': "There was an invalidated refresh token. Please login again"
+            });
+            return;
+        }
+
+        let accessToken = generateAccessToken(user, process.env.TOKEN_SECRET, '15m');
+        res.send({ accessToken });
+
+    })
+
+
+})
+
+
+router.post('/logout', async (req, res) => {
+    let refreshToken = req.body.refreshToken;
+
+    if (!refreshToken) {
+        res.sendStatus(403);
+
+
+    } else {
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
+
+            if (err) {
+                res.status(403);
+                res.json({
+                    'error': "An invalidated refresh token was submitted. Please login again."
+                })
+                return;
+            }
+            const token = new BlackListedToken();
+            token.set('token', refreshToken);
+            token.set('date_created', new Date());
+            await token.save();
+            res.send({
+                'message': "You have logged out."
+            })
+        })
+
+
+    }
+
+
+})
+
+
+
+
+
 router.get('/profile', checkIfAuthenticatedJWT, function (req, res) {
-    
+
     res.json({
         "profile": req.user
     })
 
 })
+
+
+
 
 module.exports = router;
