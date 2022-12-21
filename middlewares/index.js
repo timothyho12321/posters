@@ -17,13 +17,14 @@ const checkIfAuthenticated = (req, res, next) => {
 
 
 const checkIfAuthenticatedJWT = (req, res, next) => {
+
     const authHeader = req.headers.authorization;
 
     if (authHeader) {
-        const token = authHeader.split('')[1];
 
-        //stop HERE line 25
-        jwt.verify(token, proces.env.TOKEN_SECRET, (err, user) => {
+        const token = authHeader.split(' ')[1];
+        ;
+        jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
             if (err) {
                 return res.sendStatus(403);
             }
@@ -40,7 +41,7 @@ const checkIfAuthenticatedJWT = (req, res, next) => {
         res.sendStatus(401);
 
     }
-    
+
 
 
 }

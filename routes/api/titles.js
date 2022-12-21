@@ -5,13 +5,16 @@ const router = express.Router();
 
 
 
-
 router.get('/', async (req, res) => {
 
     console.log("get ran")
-    let checkTitle = await titlesDataLayer.getAllTitlesAPI()
-    // console.log(checkTitle);
-    res.send(await titlesDataLayer.getAllTitlesAPI())
+    let titles = await titlesDataLayer.getAllTitlesAPI()
+    
+
+    res.json({
+'titles': titles.toJSON()
+    })
+    // res.send(await titlesDataLayer.getAllTitlesAPI())
 
 
 })

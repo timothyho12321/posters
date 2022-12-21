@@ -32,6 +32,7 @@ const getHashedPassword = (password) => {
 
 
 router.post('/login', async (req, res) => {
+    console.log("user login for jwt ran")
     let user = await User.where({
         'email': req.body.email
     }).fetch({
@@ -40,9 +41,9 @@ router.post('/login', async (req, res) => {
 
     if (user && user.get('password') == getHashedPassword(req.body.password)) {
         let accessToken = generateAccessToken(user)
-        console.log(accessToken)
+        
         res.send({ accessToken })
-        // STOP HERE LINE 44 
+        
 
     } else {
         res.send({
@@ -55,6 +56,7 @@ router.post('/login', async (req, res) => {
 
 
 router.get('/profile', checkIfAuthenticatedJWT, function (req, res) {
+    
     res.json({
         "profile": req.user
     })
