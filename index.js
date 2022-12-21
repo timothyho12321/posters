@@ -5,7 +5,7 @@ const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const flash = require('connect-flash');
 const csrf = require('csurf');
-
+const cors = require('cors');
 
 require("dotenv").config();
 
@@ -15,6 +15,8 @@ let app = express();
 
 // set the view engine
 app.set("view engine", "hbs");
+
+app.use(cors());
 
 // static folder
 app.use(express.static("public"));
@@ -57,6 +59,7 @@ app.use(function (req, res, next) {
   next();
 
 })
+
 
 //OLD VERSION CSRF 
 // app.use(csrf());
