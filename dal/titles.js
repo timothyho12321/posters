@@ -11,6 +11,15 @@ async function getAllTitles(q) {
 
 }
 
+async function getAllTitlesAPI() {
+
+    const titles = await Title.collection().fetch({
+        withRelated: ['tags', 'media_property'] // for each product, load in each of the tag
+    });
+    return titles;
+
+}
+
 async function getAllMediaProperties() {
 
     const allMediaProperties = await MediaProperty.fetchAll().map((property) => {
@@ -41,7 +50,7 @@ async function createNewTitle(form) {
 }
 
 
-async function findOneTitle(posterId){
+async function findOneTitle(posterId) {
     const title = await Title.where({
         'id': posterId
     }).fetch({
@@ -56,4 +65,4 @@ async function findOneTitle(posterId){
 
 
 
-module.exports = { getAllMediaProperties, getAllTitles, createNewTitle, findOneTitle }
+module.exports = { getAllMediaProperties, getAllTitles, getAllTitlesAPI, createNewTitle, findOneTitle }

@@ -5,7 +5,7 @@ const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const flash = require('connect-flash');
 const csrf = require('csurf');
-
+const cors = require('cors');
 
 require("dotenv").config();
 
@@ -15,6 +15,8 @@ let app = express();
 
 // set the view engine
 app.set("view engine", "hbs");
+
+app.use(cors());
 
 // static folder
 app.use(express.static("public"));
@@ -58,6 +60,7 @@ app.use(function (req, res, next) {
 
 })
 
+
 //OLD VERSION CSRF 
 // app.use(csrf());
 
@@ -65,7 +68,8 @@ app.use(function (req, res, next) {
 const csrfInstance = csrf();
 app.use(function (req, res, next) {
 
-  if (req.url == "/checkout/process_payment") {
+  if (req.url == "/checkout/process_payment" || 
+  req.url.slice(0,5)=="/api/") {
     return next();
 
   }
@@ -129,6 +133,14 @@ const shoppingRoutes = require('./routes/shoppingCart')
 const checkoutRoutes = require('./routes/checkout')
 const { CartServices } = require('./services/cart_items');
 
+
+// import api routes
+const api = {
+  titles: require('./routes/api/titles'),
+  users: require('./routes/api/users')
+}
+
+
 async function main() {
 
   app.use('/', landingRoutes);
@@ -137,6 +149,11 @@ async function main() {
   app.use('/cloudinary', cloudinaryRoutes)
   app.use('/cart', shoppingRoutes);
   app.use('/checkout', checkoutRoutes)
+
+
+  // API routes
+app.use('/api/titles', express.json(), api.titles)
+app.use('/api/users', express.json(), api.users)
 }
 
 main();
