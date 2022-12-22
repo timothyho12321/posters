@@ -73,7 +73,7 @@ router.get('/', checkIfAuthenticated, async (req, res) => {
     // console.log(stripeSession);
 
     // res.send("Can resend page by res.send")
-    
+
     res.render('checkout/checkout', {
         'sessionId': stripeSession.id,
         'publishableKey': process.env.STRIPE_PUBLISHABLE_KEYS
@@ -112,12 +112,35 @@ router.post('/process_payment', express.raw({ type: 'application/json' }),
 
 
         if (event.type == "checkout.session.completed") {
-            // console.log(event.data.object)
+            console.log(event.data.object)
             // console.log("the webhook route ran")
             //SECOND PART OF PROJECT 3 IMPLEMENTATION 
             //TO CONTINUE FROM HERE TO CREATE NEW ORDER, SET DELIVERY STATUS, SEND RECEIPT PDF
 
 
+            //TO CONTINUE HERE TO MAKE ORDER MANAGEMENT
+            let stripeSession = event.data.object
+            console.log(stripeSession);
+
+            const address = stripeSession.customer_details.address
+            // address is currently null except country
+            const invoice = stripeSession.invoice
+            // need to enable invoice_creation to enabled: true
+
+            const metadata = stripeSession.metadata;
+
+            const payment_intent = stripeSession.payment_intent;
+            // console.log(payment_intent);
+
+            const payment_method_types = stripeSession.payment_method_types[0];
+            // console.log(payment_method_types);
+            const payment_status = stripeSession.payment_status;
+
+
+            const shipping_address_collection = stripeSession.shipping_address_collection;
+
+
+            const status = stripeSession.status;
 
         }
 
