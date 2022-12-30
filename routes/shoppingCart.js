@@ -20,8 +20,6 @@ router.get('/:title_id/add', async (req, res) => {
     await cart.addToCart(req.params.title_id, 1);
     req.flash('success_messages', 'You have successfully added to cart!');
 
-
-
     res.redirect('/titles')
 
 })
@@ -33,7 +31,6 @@ router.get('/:title_id/remove', checkIfAuthenticated, async (req, res) => {
 
     req.flash("success_messages", "Item is taken out of shopping cart");
     res.redirect('/cart/')
-
 
 })
 

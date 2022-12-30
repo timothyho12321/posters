@@ -124,7 +124,6 @@ app.use(async function (req, res, next) {
 
 
 
-
 const landingRoutes = require('./routes/landing');
 const titleRoutes = require('./routes/titles');
 const userRoutes = require('./routes/users')
